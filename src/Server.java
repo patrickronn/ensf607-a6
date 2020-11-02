@@ -5,6 +5,12 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+/**
+ * Creates a Server for Exercise 1 for checking client inputs for palindromes.
+ *
+ * @author Patrick Linang
+ * @since November 1, 2020
+ */
 public class Server {
     /**
      * Waits for requests to come in through the network.
@@ -71,28 +77,32 @@ public class Server {
         }
     }
 
+    /**
+     * Reads a word from socketIn and outputs to socketOut if the word is a palindrome.
+     */
     public void checkPalindrome() {
         try {
-            // Read word from incoming client
-            String word = socketIn.readLine();
+            while (true) {
+                // Read word from incoming client
+                String word = socketIn.readLine();
 
-            // Reverse the word using StringBuilder
-            StringBuilder reverseWordBuilder = new StringBuilder(word.toLowerCase());
-            reverseWordBuilder.reverse();
+                // Reverse the word using StringBuilder
+                StringBuilder reverseWordBuilder = new StringBuilder(word);
+                reverseWordBuilder.reverse();
 
-            // Check if the word is a palindrome, then return statement back to client
-            if (word.toLowerCase().equals(reverseWordBuilder.toString()))
-                socketOut.println(word + "is not a Palindrome.");
-            else
-                socketOut.println(word + "is a Palindrome.");
-
+                // Check if the word is a palindrome, then return statement back to client
+                if (word.toLowerCase().equals(reverseWordBuilder.toString().toLowerCase()))
+                    socketOut.println(word + " is a Palindrome.");
+                else
+                    socketOut.println(word + " is not a Palindrome.");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public static void main(String[] args) {
-        Server myServer = new Server("localhost", 8989);
+        Server myServer = new Server("localhost", 8099);
         myServer.runServer();
     }
 }
