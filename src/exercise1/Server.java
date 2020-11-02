@@ -1,3 +1,5 @@
+package exercise1;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -34,10 +36,9 @@ public class Server {
 
     /**
      * Instantiates a server with an initialized server socket to specified port.
-     * @param serverName name of the server (e.g. "localhost")
-     * @param portNumber name of port to bind (e.g. 8989)
+     * @param portNumber name of port to bind (e.g. 8099)
      */
-    public Server(String serverName, int portNumber) {
+    public Server(int portNumber) {
         try {
             serverSocket = new ServerSocket(portNumber);
         } catch (IOException e) {
@@ -64,11 +65,11 @@ public class Server {
             }
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        finally {
-            // Close sockets
+        } finally {
+            // Close streams
             try {
                 socketIn.close();
+                serverSocket.close();
             }
             catch (IOException e) {
                 e.printStackTrace();
@@ -102,7 +103,7 @@ public class Server {
     }
 
     public static void main(String[] args) {
-        Server myServer = new Server("localhost", 8099);
+        Server myServer = new Server(8099);
         myServer.runServer();
     }
 }
