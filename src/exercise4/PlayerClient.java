@@ -48,47 +48,56 @@ public class PlayerClient {
      * Connects the client to a game and handles IO with command line and the server.
      */
     public void connectToGame() {
-        try {
-            String response = "";
-            boolean gameRunning = true;
-            while (gameRunning) {
+        String response = "";
+        boolean gameRunning = true;
+        while (gameRunning) {
+            try {
+
                 // Wait for a response from server
                 response = socketIn.readLine();
 
-                // If response doesn't contain "Message:", assume it requires a response
-                if (!response.contains("Message:")) {
-                    // Print response to std out
-                    System.out.println(response);
+//                // If response doesn't contain "Message:", assume it requires a response
+//                if (!response.contains("Message:")) {
+//                    // Print response to std out
+//                    System.out.println(response);
+//
+//                    // Read user input and send to server
+//                    socketOut.println(stdIn.readLine());
+//                }
+//                else {
+//                    // Print response to std out
+//                    System.out.println(response);
+//                }
 
-                    // Read user input and send to server
+                // Print response to std out
+                System.out.println(response);
+
+                // If response contains a name prompt, read user input and send to server
+                if (response.contains("Please enter the name"))
                     socketOut.println(stdIn.readLine());
-                }
-                else {
-                    // Print response to std out
-                    System.out.println(response);
-                }
 
                 // Stop if game is finished running
                 if (response.equals("Message: Game finished.")) {
                     gameRunning = false;
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            // Close streams
-            try {
-                stdIn.close();
-                socketIn.close();
-            } catch (IOException e) {
+            catch (IOException e) {
                 e.printStackTrace();
             }
-            socketOut.close();
         }
+        // Close streams
+        try {
+            stdIn.close();
+            socketIn.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        socketOut.close();
     }
 
     public static void main(String[] args) {
-        PlayerClient player = new PlayerClient("localhost", 9090);
+        PlayerClient player = new PlayerClient("localhost", 8099);
         player.connectToGame();
     }
 }

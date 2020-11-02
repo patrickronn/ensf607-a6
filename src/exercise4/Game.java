@@ -10,7 +10,7 @@ import java.io.*;
  * @author Patrick Ronn Linang
  * @since November 1, 2020
  */
-public class Game implements Constants {
+public class Game implements Constants, Runnable {
 	/**
 	 * Represents the game's playing board.
 	 */
@@ -40,43 +40,16 @@ public class Game implements Constants {
     }
 
 	/**
-	 * Plays a game of tic-tac-toe using command line as the interface.
-	 * @param args not used
-	 * @throws IOException error if there's issues reading a player's move
+	 * Getter method for theBoard.
+	 * @return reference to the game's board
 	 */
-	public static void main(String[] args) throws IOException {
-		Referee theRef;
-		Player xPlayer, oPlayer;
-		BufferedReader stdin;
-		Game theGame = new Game();
-		stdin = new BufferedReader(new InputStreamReader(System.in));
-		System.out.print("\nPlease enter the name of the \'X\' player: ");
-		String name= stdin.readLine();
-		while (name == null) {
-			System.out.print("Please try again: ");
-			name = stdin.readLine();
-		}
-
-		xPlayer = new Player(name, LETTER_X);
-		xPlayer.setBoard(theGame.theBoard);
-		
-		System.out.print("\nPlease enter the name of the \'O\' player: ");
-		name = stdin.readLine();
-		while (name == null) {
-			System.out.print("Please try again: ");
-			name = stdin.readLine();
-		}
-		
-		oPlayer = new Player(name, LETTER_O);
-		oPlayer.setBoard(theGame.theBoard);
-		
-		theRef = new Referee();
-		theRef.setBoard(theGame.theBoard);
-		theRef.setoPlayer(oPlayer);
-		theRef.setxPlayer(xPlayer);
-        
-        theGame.appointReferee(theRef);
+	public Board getTheBoard() {
+		return theBoard;
 	}
-	
 
+	@Override
+	public void run() {
+    	theRef = new Referee();
+    	theRef.setBoard(this.theBoard);
+	}
 }
