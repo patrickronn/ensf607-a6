@@ -1,6 +1,7 @@
 package exercise4;
 
-import java.io.*;
+
+import java.io.IOException;
 
 /**
  * This class represents a board game of tic-tac-toe with a referee and played by two players.
@@ -24,7 +25,7 @@ public class Game implements Constants, Runnable {
 	/**
 	 * Constructs Game with a new, empty playing board.
 	 */
-    public Game( ) {
+    public Game() {
         theBoard  = new Board();
 	}
 
@@ -45,14 +46,27 @@ public class Game implements Constants, Runnable {
 		return theBoard;
 	}
 
+	/**
+	 * Runs a game managed by a thread.
+	 */
 	@Override
 	public void run() {
 		try {
-			System.out.println("Server: a new game has started.");
+			System.out.println("Server: a new game has started on " + Thread.currentThread().getName() + ".");
 			theRef.runTheGame();
 		} catch (IOException e) {
-			System.out.println("Server error while running game: ");
+			System.out.println("Server: error while running game. ");
 			e.printStackTrace();
+		}
+		finally {
+			System.out.println("Server: a game has ended on " + Thread.currentThread().getName() + ".");
+			try {
+				// End game by properly closing IO streams
+				theRef.endTheGame();
+			} catch (IOException e) {
+				System.out.println("Server: error when closing player IO connection.");
+				e.printStackTrace();
+			}
 		}
 	}
 }

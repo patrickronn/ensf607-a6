@@ -40,8 +40,9 @@ public class Referee {
      * and makes 'X' player go first.
      *
      * @throws IOException error if there's issues when attempting to read a player's move
+     * @throws IllegalStateException error if attempting to run game without two players assigned
      */
-    public void runTheGame() throws IOException {
+    public void runTheGame() throws IOException, IllegalStateException {
         if (xPlayer == null || oPlayer == null)
             throw new IllegalStateException("Cannot run a game without assigning players to the referee.");
 
@@ -51,6 +52,15 @@ public class Referee {
 
         // 'X' player makes the first move
         xPlayer.play();
+    }
+
+    /**
+     * Closes player IO connections to sockets once game is finished.
+     * @throws IOException error if there's issues closing IO connection
+     */
+    public void endTheGame() throws IOException {
+        xPlayer.close();
+        oPlayer.close();
     }
 
     /**

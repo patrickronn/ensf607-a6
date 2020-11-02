@@ -8,6 +8,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class GameServer implements Constants {
     /**
@@ -60,6 +61,10 @@ public class GameServer implements Constants {
         }
     }
 
+    /**
+     * Waits for incoming client connections and assigns them as Players.
+     * Starts a new game if two Player clients are ready.
+     */
     public void runServer() {
         try {
             String name = "";
@@ -95,27 +100,43 @@ public class GameServer implements Constants {
 
                     // Start a new game
                     startNewGame(xPlayerWaiting, oPlayer);
-                    xPlayerWaiting = null;
+                    xPlayerWaiting = null;  // null so server can accept the next client as xPlayerWaiting
                 }
             }
         } catch (IOException e) {
-            System.out.println("Server error occurred:");
+            System.err.println("Server: IO error occurred with new client connection");
             e.printStackTrace();
         } finally {
-            // Close streams
+            // Shutdown thread pool
+            gamePool.shutdown();
+            System.out.println("Server is now shutting down.");
             try {
+                // Wait for threads to finish
+                gamePool.awaitTermination(1,  TimeUnit.HOURS);
+
+                // Close streams
                 socketIn.close();
                 serverSocket.close();
             }
+            catch (InterruptedException e) {
+                System.err.println("Server: thread was interrupted");
+                e.printStackTrace();
+            }
             catch (IOException e) {
-                System.out.println("Error while closing streams:");
+                System.err.println("Server: error while closing streams");
                 e.printStackTrace();
             }
             socketOut.close();
         }
     }
 
-    public void startNewGame(Player xPlayer, Player oPlayer) throws IOException {
+    /**
+     * Creates a game on new thread whenever two Players are available.
+     *
+     * @param xPlayer player with mark 'X' who will make the first move
+     * @param oPlayer player with mark '0' who is the other opponent
+     */
+    public void startNewGame(Player xPlayer, Player oPlayer) {
         // Instantiate game and referee
 		Game theGame = new Game();
 		Referee theRef = new Referee();
@@ -132,7 +153,7 @@ public class GameServer implements Constants {
 		// Assign referee to the game
         theGame.appointReferee(theRef);
 
-        // Start the game
+        // Start the game on a thread
         gamePool.execute(theGame);
     }
 

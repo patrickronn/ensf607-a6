@@ -59,12 +59,16 @@ public class PlayerClient {
                 // Print response to std out
                 System.out.println(response);
 
+                // If response is null then server is unresponsive, so end game
+                if (response == null) {
+                    System.err.println("Error: received null from server (server died).");
+                    gameRunning = false;
+                }
                 // If response contains a name prompt, read user input and send to server
-                if (response.contains("Please enter the name") || response.contains("?"))
+                else if (response.contains("Please enter the name") || response.contains("?"))
                     socketOut.println(stdIn.readLine());
-
                 // Stop if game is finished running
-                if (response.equals("Message: Game finished.")) {
+                else if (response.contains("THE GAME IS OVER")) {
                     gameRunning = false;
                 }
             }
@@ -72,7 +76,7 @@ public class PlayerClient {
                 e.printStackTrace();
             }
         }
-        // Close streams
+        // Close IO connection points
         try {
             stdIn.close();
             socketIn.close();

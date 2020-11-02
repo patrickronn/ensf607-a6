@@ -75,7 +75,7 @@ public class Player {
         Player playerCurrentTurn = opponent;
         Player playerNextTurn = this;
 
-        // TODO: THERES AN ERROR WHEN YOU SCROLL IN THE Run menu below!
+        // TODO: THERE'S AN ERROR WHEN YOU SCROLL IN THE Run menu below
         do {
             // Show board to player who went last turn
             board.display(playerCurrentTurn.socketOut);
@@ -96,12 +96,13 @@ public class Player {
                 playerNextTurn = this;
         } while (!board.xWins() && !board.oWins() && !board.isFull());
 
-        // Display winner to std out (logically, the winner is the player who ended the iteration above)
+        // Reaches here when game is finished:
         String gameOverString = "";
 
         board.display(this.socketOut);
         board.display(opponent.socketOut);
 
+        // Display winner (logically, the winner is the player whose turn broke the play loop)
         if (board.xWins() || board.oWins())
             gameOverString = "THE GAME IS OVER: " + playerCurrentTurn.name + " is the winner!";
         else // if (board.isFull())
@@ -208,5 +209,32 @@ public class Player {
      */
     public void setBoard(Board theBoard) {
         this.board = theBoard;
+    }
+
+    /**
+     * Setter method for stream to read player moves.
+     * @param socketIn BufferedReader to read from player client
+     */
+    public void setSocketIn(BufferedReader socketIn) {
+        this.socketIn = socketIn;
+    }
+
+    /**
+     * Setter method for stream to display prompts and game progress to player.
+     * @param socketOut PrintWrite to write to player client
+     */
+    public void setSocketOut(PrintWriter socketOut) {
+        this.socketOut = socketOut;
+    }
+
+    /**
+     * Close IO connection points for socketIn and socketOut.
+     * @throws IOException error when attempting to close BufferedReader
+     */
+    public void close() throws IOException {
+        if (socketIn != null)
+            socketIn.close();
+        if (socketOut != null)
+            socketOut.close();
     }
 }
