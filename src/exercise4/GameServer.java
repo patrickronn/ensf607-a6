@@ -9,7 +9,7 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class GameServer implements Constants{
+public class GameServer implements Constants {
     /**
      * Waits for requests to come in through the network.
      */
@@ -120,13 +120,20 @@ public class GameServer implements Constants{
 		Game theGame = new Game();
 		Referee theRef = new Referee();
 
-		// Assign game board and players to referee
+		// Assign board to players
+        xPlayer.setBoard(theGame.getTheBoard());
+        oPlayer.setBoard(theGame.getTheBoard());
+
+        // Assign game board and players to referee
 		theRef.setBoard(theGame.getTheBoard());
 		theRef.setoPlayer(oPlayer);
 		theRef.setxPlayer(xPlayer);
 
-		// Start the game
+		// Assign referee to the game
         theGame.appointReferee(theRef);
+
+        // Start the game
+        gamePool.execute(theGame);
     }
 
     public static void main(String[] args) {

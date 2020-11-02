@@ -3,6 +3,7 @@ package exercise4;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 
 /**
  * This class represents a player who can play a game.
@@ -10,10 +11,22 @@ import java.io.InputStreamReader;
  * A Player plays a Game and can view the playing Board. They also keep track of an opponent
  * Player and the Referee.
  *
+ * Has IO streams with a PlayerClient.
+ *
  * @author Patrick Ronn Linang
  * @since November 1, 2020
  */
 public class Player {
+    /**
+     * Reads from a client.
+     */
+    private BufferedReader socketIn;
+
+    /**
+     * Writes to a client.
+     */
+    private PrintWriter socketOut;
+
     /**
      * Represents name of the player.
      */
@@ -40,10 +53,14 @@ public class Player {
      * A new player isn't assigned to a board yet.
      * @param name name of the player
      * @param mark a char representing the player's mark on the board
+     * @param socketIn stream that reads from a player client
+     * @param socketOut stream that writes to a player client
      */
-    public Player(String name, char mark) {
+    public Player(String name, char mark, BufferedReader socketIn, PrintWriter socketOut) {
         this.name = name;
         this.mark = mark;
+        this.socketIn = socketIn;
+        this.socketOut = socketOut;
         setBoard(null);
     }
 
@@ -52,19 +69,22 @@ public class Player {
      *
      * Assumes that the player invoking this method has the starting move.
      * Displays winner (or announces a tie) once game is over to std out.
-     *
-     * @throws IOException error if there's issues reading a player's move
      */
     public void play() throws IOException {
         // Players keep making moves until someone wins or board is full
-        Player playerCurrentTurn;
+        Player playerCurrentTurn = opponent;
         Player playerNextTurn = this;
 
+        // TODO: THERES AN ERROR WHEN YOU SCROLL IN THE Run menu below!
         do {
+            // Show board to player who went last turn
+            board.display(playerCurrentTurn.socketOut);
+            playerCurrentTurn.socketOut.println("Waiting on opponent's turn...");
+
             playerCurrentTurn = playerNextTurn;
 
-            // Show board
-            board.display();
+            // Show board to player who goes this current turn
+            board.display(playerCurrentTurn.socketOut);
 
             // Player makes a move during their turn
             playerCurrentTurn.makeMove();
@@ -77,35 +97,29 @@ public class Player {
         } while (!board.xWins() && !board.oWins() && !board.isFull());
 
         // Display winner to std out (logically, the winner is the player who ended the iteration above)
-        if (board.xWins()) {
-            board.display();
-            System.out.println("THE GAME IS OVER: " + playerCurrentTurn.name + " is the winner!");
-        }
-        else if (board.oWins()) {
-            board.display();
-            System.out.println("THE GAME IS OVER: " + playerCurrentTurn.name + " is the winner!");
-        }
-        else { // if (board.isFull())
-            board.display();
-            System.out.println("THE GAME IS OVER: there is no winner; it's a tie!");
-        }
+        String gameOverString = "";
+
+        board.display(this.socketOut);
+        board.display(opponent.socketOut);
+
+        if (board.xWins() || board.oWins())
+            gameOverString = "THE GAME IS OVER: " + playerCurrentTurn.name + " is the winner!";
+        else // if (board.isFull())
+            gameOverString = "THE GAME IS OVER: there is no winner; it's a tie!";
+
+        this.socketOut.println(gameOverString);
+        opponent.socketOut.println(gameOverString);
     }
 
     /**
      * Represents a player move by asking player to place their mark on a specific tile.
-     *
-     * @throws IOException error if there's issues reading from std in
      */
     public void makeMove() throws IOException {
-        // Use a buffered reader to get player input from std in
-        BufferedReader stdin;
-        stdin = new BufferedReader(new InputStreamReader(System.in));
-
         // Get index values from player
         int row, col;
         do {
-            row = getRowIndex(stdin);
-            col = getColumnIndex(stdin);
+            row = getRowIndex();
+            col = getColumnIndex();
         } while (!isValidMove(row, col));
 
         // Update board with player mark
@@ -122,12 +136,12 @@ public class Player {
     private boolean isValidMove(int row, int col) {
         // Check that indices are within bounds
         if (row > 2 || row < 0 || col > 2 || col < 0) {
-            System.out.println("Indices are out of range (choose index values between 0-2).");
+            socketOut.println("Indices are out of range (choose index values between 0-2).");
             return false;
         }
         // Check that the tile is empty
         else if (board.getMark(row, col) == this.mark || board.getMark(row, col) == opponent.mark) {
-            System.out.println("A mark was already placed at (" + row + ", " + col + "). Choose another spot.");
+            socketOut.println("A mark was already placed at (" + row + ", " + col + "). Choose another spot.");
             return false;
         }
         else
@@ -137,21 +151,19 @@ public class Player {
     /**
      * Helper method to get row index from std in when making a move.
      *
-     * @param stdin a BufferedReader to std in
      * @return the row index to add a mark
-     * @throws IOException error if there's issues reading from std in
      */
-    private int getRowIndex(BufferedReader stdin) throws IOException {
+    private int getRowIndex() throws IOException {
         // Get row index from player
-        System.out.print(this.name + ", what row should your next " + this.mark + " be placed in? ");
+        socketOut.println(this.name + ", what row should your next " + this.mark + " be placed in? ");
         int row;
         while (true) {
             try {
-                row = Integer.parseInt(stdin.readLine());
+                row = Integer.parseInt(socketIn.readLine());
                 break;
             }
             catch (NumberFormatException e) {
-                System.out.print("Invalid index, please try again (row index 0-2): ");
+                socketOut.println("Invalid index, please try again (row index 0-2): ");
             }
         }
 
@@ -161,21 +173,19 @@ public class Player {
     /**
      * Helper method to get column index from std in when making a move.
      *
-     * @param stdin a BufferedReader to std in
      * @return the column index to add a mark
-     * @throws IOException error if there's issues reading from std in
      */
-    private int getColumnIndex(BufferedReader stdin) throws IOException {
+    private int getColumnIndex() throws IOException {
         // Get column index from player
-        System.out.print(this.name + ", what column should your next " + this.mark + " be placed in? ");
+        socketOut.println(this.name + ", what column should your next " + this.mark + " be placed in? ");
         int col;
         while (true) {
             try {
-                col = Integer.parseInt(stdin.readLine());
+                col = Integer.parseInt(socketIn.readLine());
                 break;
             }
             catch (NumberFormatException e) {
-                System.out.print("Invalid index, please try again (column index 0-2): ");
+                socketOut.println("Invalid index, please try again (column index 0-2): ");
             }
         }
 

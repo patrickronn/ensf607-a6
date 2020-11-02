@@ -1,6 +1,8 @@
 package exercise4;
 
 
+import java.io.PrintWriter;
+
 /**
  * This class represents a 3x3 playing board where each tile gets marked.
  *
@@ -81,17 +83,17 @@ public class Board implements Constants {
 	 *
 	 * Used to visualize how each tile was marked (and which ones are empty)
 	 */
-	public void display() {
-		displayColumnHeaders();
-		addHyphens();
+	public void display(PrintWriter socketOut) {
+		displayColumnHeaders(socketOut);
+		addHyphens(socketOut);
 		for (int row = 0; row < 3; row++) {
-			addSpaces();
-			System.out.print("    row " + row + ' ');
+			addSpaces(socketOut);
+			socketOut.print("    row " + row + ' ');
 			for (int col = 0; col < 3; col++)
-				System.out.print("|  " + getMark(row, col) + "  ");
-			System.out.println("|");
-			addSpaces();
-			addHyphens();
+				socketOut.print("|  " + getMark(row, col) + "  ");
+			socketOut.println("|");
+			addSpaces(socketOut);
+			addHyphens(socketOut);
 		}
 	}
 
@@ -174,30 +176,30 @@ public class Board implements Constants {
 	/**
 	 * Prints the board's column headers to std out in a evenly-spaced format.
 	 */
-	void displayColumnHeaders() {
-		System.out.print("          ");
+	void displayColumnHeaders(PrintWriter socketOut) {
+		socketOut.print("          ");
 		for (int j = 0; j < 3; j++)
-			System.out.print("|col " + j);
-		System.out.println();
+			socketOut.print("|col " + j);
+		socketOut.println();
 	}
 
 	/**
 	 * Prints hyphens for formatting purposes. Used for printing the board to std out.
 	 */
-	void addHyphens() {
-		System.out.print("          ");
+	void addHyphens(PrintWriter socketOut) {
+		socketOut.print("          ");
 		for (int j = 0; j < 3; j++)
-			System.out.print("+-----");
-		System.out.println("+");
+			socketOut.print("+-----");
+		socketOut.println("+");
 	}
 
 	/**
 	 * Prints spaces for formatting purposes. Used for printing the board to std out.
 	 */
-	void addSpaces() {
-		System.out.print("          ");
+	void addSpaces(PrintWriter socketOut) {
+		socketOut.print("          ");
 		for (int j = 0; j < 3; j++)
-			System.out.print("|     ");
-		System.out.println("|");
+			socketOut.print("|     ");
+		socketOut.println("|");
 	}
 }

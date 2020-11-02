@@ -32,11 +32,9 @@ public class Game implements Constants, Runnable {
 	 * Assigns a referee to the game.
 	 *
 	 * @param r reference to a Referee object
-	 * @throws IOException error if there's issues reading a player's move
 	 */
-    public void appointReferee(Referee r) throws IOException {
+    public void appointReferee(Referee r) {
         theRef = r;
-    	theRef.runTheGame();
     }
 
 	/**
@@ -49,7 +47,12 @@ public class Game implements Constants, Runnable {
 
 	@Override
 	public void run() {
-    	theRef = new Referee();
-    	theRef.setBoard(this.theBoard);
+		try {
+			System.out.println("Server: a new game has started.");
+			theRef.runTheGame();
+		} catch (IOException e) {
+			System.out.println("Server error while running game: ");
+			e.printStackTrace();
+		}
 	}
 }

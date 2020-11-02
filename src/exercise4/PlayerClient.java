@@ -56,24 +56,11 @@ public class PlayerClient {
                 // Wait for a response from server
                 response = socketIn.readLine();
 
-//                // If response doesn't contain "Message:", assume it requires a response
-//                if (!response.contains("Message:")) {
-//                    // Print response to std out
-//                    System.out.println(response);
-//
-//                    // Read user input and send to server
-//                    socketOut.println(stdIn.readLine());
-//                }
-//                else {
-//                    // Print response to std out
-//                    System.out.println(response);
-//                }
-
                 // Print response to std out
                 System.out.println(response);
 
                 // If response contains a name prompt, read user input and send to server
-                if (response.contains("Please enter the name"))
+                if (response.contains("Please enter the name") || response.contains("?"))
                     socketOut.println(stdIn.readLine());
 
                 // Stop if game is finished running
