@@ -6,7 +6,7 @@ import java.io.IOException;
  * A class to represent a referee that can initiate a game to begin.
  *
  * @author Patrick Ronn Linang
- * @since September 27, 2020
+ * @since November 1, 2020
  */
 public class Referee {
     /**

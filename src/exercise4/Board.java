@@ -7,7 +7,7 @@ package exercise4;
  * Includes methods to determine if a winner exists and to display the board to std out.
  *
  * @author Patrick Ronn Linang
- * @since September 27, 2020
+ * @since November 1, 2020
  */
 public class Board implements Constants {
 	/**

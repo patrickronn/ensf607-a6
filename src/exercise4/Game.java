@@ -8,7 +8,7 @@ import java.io.*;
  * Includes the program's main method.
  *
  * @author Patrick Ronn Linang
- * @since September 27, 2020
+ * @since November 1, 2020
  */
 public class Game implements Constants {
 	/**
