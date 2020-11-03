@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.Socket;
 
 /**
  * This class represents a player who can play a game.
@@ -17,6 +18,12 @@ import java.io.PrintWriter;
  * @since November 1, 2020
  */
 public class Player {
+
+    /**
+     * The socket connecting to the player's client.
+     */
+    private Socket playerSocket;
+
     /**
      * Reads from a client.
      */
@@ -53,15 +60,19 @@ public class Player {
      * A new player isn't assigned to a board yet.
      * @param name name of the player
      * @param mark a char representing the player's mark on the board
-     * @param socketIn stream that reads from a player client
-     * @param socketOut stream that writes to a player client
      */
-    public Player(String name, char mark, BufferedReader socketIn, PrintWriter socketOut) {
-        this.name = name;
-        this.mark = mark;
-        this.socketIn = socketIn;
-        this.socketOut = socketOut;
-        setBoard(null);
+    public Player(String name, char mark, Socket playerSocket) {
+        try {
+            this.name = name;
+            this.mark = mark;
+            this.playerSocket = playerSocket;
+            this.socketIn = new BufferedReader(new InputStreamReader(playerSocket.getInputStream()));
+            this.socketOut = new PrintWriter(playerSocket.getOutputStream(), true);
+            setBoard(null);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -75,7 +86,6 @@ public class Player {
         Player playerCurrentTurn = opponent;
         Player playerNextTurn = this;
 
-        // TODO: THERE'S AN ERROR WHEN YOU SCROLL IN THE Run menu below
         do {
             // Show board to player who went last turn
             board.display(playerCurrentTurn.socketOut);
@@ -164,7 +174,7 @@ public class Player {
                 break;
             }
             catch (NumberFormatException e) {
-                socketOut.println("Invalid index, please try again (row index 0-2): ");
+                socketOut.println("Invalid index - Please try again (row index 0-2): ");
             }
         }
 
@@ -186,7 +196,7 @@ public class Player {
                 break;
             }
             catch (NumberFormatException e) {
-                socketOut.println("Invalid index, please try again (column index 0-2): ");
+                socketOut.println("Invalid index - Please try again (column index 0-2): ");
             }
         }
 
@@ -212,29 +222,15 @@ public class Player {
     }
 
     /**
-     * Setter method for stream to read player moves.
-     * @param socketIn BufferedReader to read from player client
-     */
-    public void setSocketIn(BufferedReader socketIn) {
-        this.socketIn = socketIn;
-    }
-
-    /**
-     * Setter method for stream to display prompts and game progress to player.
-     * @param socketOut PrintWrite to write to player client
-     */
-    public void setSocketOut(PrintWriter socketOut) {
-        this.socketOut = socketOut;
-    }
-
-    /**
-     * Close IO connection points for socketIn and socketOut.
-     * @throws IOException error when attempting to close BufferedReader
+     * Close IO connection points for IO and socket connection.
+     * @throws IOException error when attempting to close
      */
     public void close() throws IOException {
         if (socketIn != null)
             socketIn.close();
         if (socketOut != null)
             socketOut.close();
+        if (playerSocket != null)
+            playerSocket.close();
     }
 }

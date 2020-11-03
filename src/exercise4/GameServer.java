@@ -19,7 +19,7 @@ public class GameServer implements Constants {
     /**
      * Used to accept client connection.
      */
-    private Socket aSocket;
+    private Socket socket;
 
     /**
      * Writes to a client socket.
@@ -70,12 +70,12 @@ public class GameServer implements Constants {
             String name = "";
             while (true) {
                 // Wait for a client connection
-                aSocket = serverSocket.accept();
-                System.out.println("Server: a new player client has connected.");
+                socket = serverSocket.accept();
+                System.out.println("Server: a new player client has connected on " + socket.getLocalSocketAddress());
 
-                // Open IO streams
-                socketIn = new BufferedReader(new InputStreamReader(aSocket.getInputStream()));
-                socketOut = new PrintWriter(aSocket.getOutputStream(), true);
+                // Create IO connections
+                socketIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                socketOut = new PrintWriter(socket.getOutputStream(), true);
 
                 socketOut.println("Message: WELCOME TO THE GAME");
 
@@ -86,7 +86,7 @@ public class GameServer implements Constants {
 
                     // Create a new player and notify them to wait for opponent
                     name = socketIn.readLine();
-                    xPlayerWaiting = new Player(name, LETTER_X, socketIn, socketOut);
+                    xPlayerWaiting = new Player(name, LETTER_X, socket);
 
                     socketOut.println("Message: Waiting for opponent to connect");
                 }
@@ -96,7 +96,7 @@ public class GameServer implements Constants {
 
                     // Create a new player
                     name = socketIn.readLine();
-                    Player oPlayer = new Player(name, LETTER_O, socketIn, socketOut);
+                    Player oPlayer = new Player(name, LETTER_O, socket);
 
                     // Start a new game
                     startNewGame(xPlayerWaiting, oPlayer);
@@ -104,7 +104,8 @@ public class GameServer implements Constants {
                 }
             }
         } catch (IOException e) {
-            System.err.println("Server: IO error occurred with new client connection");
+            System.out.println("Server: IO error occurred with new client connection");
+            System.err.println(e.getMessage());
             e.printStackTrace();
         } finally {
             // Shutdown thread pool
@@ -114,19 +115,21 @@ public class GameServer implements Constants {
                 // Wait for threads to finish
                 gamePool.awaitTermination(1,  TimeUnit.HOURS);
 
-                // Close streams
+                // Close streams (note: each socket to PlayerClient is closed by Player object's close())
                 socketIn.close();
                 serverSocket.close();
+                socketOut.close();
             }
             catch (InterruptedException e) {
-                System.err.println("Server: thread was interrupted");
+                System.out.println("Server: a thread was interrupted");
+                System.err.println(e.getMessage());
                 e.printStackTrace();
             }
             catch (IOException e) {
-                System.err.println("Server: error while closing streams");
+                System.out.println("Server: error while closing streams");
+                System.err.println(e.getMessage());
                 e.printStackTrace();
             }
-            socketOut.close();
         }
     }
 

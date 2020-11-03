@@ -41,6 +41,7 @@ public class PlayerClient {
             socketOut = new PrintWriter(gameSocket.getOutputStream(), true);
         } catch (IOException e) {
             e.printStackTrace();
+            System.exit(1);
         }
     }
 
@@ -48,7 +49,8 @@ public class PlayerClient {
      * Connects the client to a game and handles IO with command line and the server.
      */
     public void connectToGame() {
-        String response = "";
+        String response;
+        String line = "";
         boolean gameRunning = true;
         while (gameRunning) {
             try {
@@ -64,9 +66,19 @@ public class PlayerClient {
                     System.err.println("Error: received null from server (server died).");
                     gameRunning = false;
                 }
-                // If response contains a name prompt, read user input and send to server
-                else if (response.contains("Please enter the name") || response.contains("?"))
-                    socketOut.println(stdIn.readLine());
+                // Search for phrases that require user input and send to server
+                else if (response.contains("Please enter the name") ||
+                         response.contains("Please try again") ||
+                         response.contains("?")) {
+
+                    line = stdIn.readLine();
+
+                    while (line == null || line.isEmpty()) {
+                        System.out.println("Invalid input, please try again:");
+                        line = stdIn.readLine();
+                    }
+                    socketOut.println(line);
+                }
                 // Stop if game is finished running
                 else if (response.contains("THE GAME IS OVER")) {
                     gameRunning = false;
@@ -80,8 +92,10 @@ public class PlayerClient {
         try {
             stdIn.close();
             socketIn.close();
+            gameSocket.close();
         }
         catch (IOException e) {
+            System.out.println(e.getMessage());
             e.printStackTrace();
         }
         socketOut.close();
