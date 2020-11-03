@@ -67,7 +67,6 @@ public class GameServer implements Constants {
      */
     public void runServer() {
         try {
-            String name = "";
             while (true) {
                 // Wait for a client connection
                 socket = serverSocket.accept();
@@ -78,29 +77,31 @@ public class GameServer implements Constants {
                 socketOut = new PrintWriter(socket.getOutputStream(), true);
 
                 socketOut.println("Message: WELCOME TO THE GAME");
+                socketOut.println("Please enter your name: ");
+                String name = socketIn.readLine();
 
                 // Handle whether the new client is first player (xPlayer) or second player (oPlayer)
-                if (xPlayerWaiting == null) {
-                    // Prompt for first player's name
-                    socketOut.println("Please enter the name of the 'X' player: ");
-
-                    // Create a new player and notify them to wait for opponent
-                    name = socketIn.readLine();
+                if (xPlayerWaiting == null && name != null) {
+                    // Create Player 'X'
+                    socketOut.println(name + ", you are assigned to Player 'X'.");
                     xPlayerWaiting = new Player(name, LETTER_X, socket);
 
-                    socketOut.println("Message: Waiting for opponent to connect");
+                    socketOut.println("\nMessage: Waiting for an opponent to connect...");
                 }
-                else {
-                    // Prompt for second player's name
-                    socketOut.println("Please enter the name of the 'O' player: ");
-
-                    // Create a new player
-                    name = socketIn.readLine();
+                else if (xPlayerWaiting != null && name != null){
+                    // Create Player 'O'
+                    socketOut.println(name + ", you are assigned to Player 'O'.");
                     Player oPlayer = new Player(name, LETTER_O, socket);
 
-                    // Start a new game
+                    // Start a new game since two players are ready
                     startNewGame(xPlayerWaiting, oPlayer);
-                    xPlayerWaiting = null;  // null so server can accept the next client as xPlayerWaiting
+                    xPlayerWaiting = null;  // reset so server can accept the next client as xPlayerWaiting
+                }
+                else { // name == null
+                    System.out.println("Server: lost connection with player client; waiting for a new connection.");
+                    socket.close();
+                    socketIn.close();
+                    socketOut.close();
                 }
             }
         } catch (IOException e) {
@@ -115,7 +116,8 @@ public class GameServer implements Constants {
                 // Wait for threads to finish
                 gamePool.awaitTermination(1,  TimeUnit.HOURS);
 
-                // Close streams (note: each socket to PlayerClient is closed by Player object's close())
+                // Close streams
+                // Note: Player close() method handles closing connections to PlayerClients
                 socketIn.close();
                 serverSocket.close();
                 socketOut.close();

@@ -63,12 +63,12 @@ public class PlayerClient {
 
                 // If response is null then server is unresponsive, so end game
                 if (response == null) {
-                    System.err.println("Error: received null from server (server died).");
+                    System.err.println("Error: connection with server was lost.");
                     gameRunning = false;
                 }
                 // Search for phrases that require user input and send to server
-                else if (response.contains("Please enter the name") ||
-                         response.contains("Please try again") ||
+                else if (response.toLowerCase().contains("enter your name") ||
+                         response.toLowerCase().contains("try again") ||
                          response.contains("?")) {
 
                     line = stdIn.readLine();

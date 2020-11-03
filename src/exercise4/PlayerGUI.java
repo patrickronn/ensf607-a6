@@ -72,6 +72,7 @@ public class PlayerGUI extends JFrame {
         contentPane.add(messagePanel);
         this.setResizable(false);
 
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800,300);
         setTitle(title);
         setVisible(true);

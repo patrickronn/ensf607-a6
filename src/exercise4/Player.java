@@ -170,7 +170,10 @@ public class Player {
         int row;
         while (true) {
             try {
-                row = Integer.parseInt(socketIn.readLine());
+                String line = socketIn.readLine();
+                if (line == null)
+                    throw new IOException("a PlayerClient disconnected");
+                row = Integer.parseInt(line);
                 break;
             }
             catch (NumberFormatException e) {
@@ -192,7 +195,10 @@ public class Player {
         int col;
         while (true) {
             try {
-                col = Integer.parseInt(socketIn.readLine());
+                String line = socketIn.readLine();
+                if (line == null)
+                    throw new IOException("a PlayerClient disconnected");
+                col = Integer.parseInt(line);
                 break;
             }
             catch (NumberFormatException e) {

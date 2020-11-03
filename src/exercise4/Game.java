@@ -55,8 +55,8 @@ public class Game implements Constants, Runnable {
 			System.out.println("Server: a new game has started on " + Thread.currentThread().getName() + ".");
 			theRef.runTheGame();
 		} catch (IOException e) {
-			System.out.println("Server: error while running game. ");
-			e.printStackTrace();
+			System.out.println("Server: game ended abruptly on " + Thread.currentThread().getName() +
+					" (reason: " + e.getMessage() + ").");
 		}
 		finally {
 			System.out.println("Server: a game has ended on " + Thread.currentThread().getName() + ".");
@@ -64,7 +64,7 @@ public class Game implements Constants, Runnable {
 				// End game by properly closing IO streams and sockets to player clients
 				theRef.endTheGame();
 			} catch (IOException e) {
-				System.out.println("Server: error when closing player IO connection.");
+				System.err.println("Server: error when closing player IO connection.");
 				e.printStackTrace();
 			}
 		}
