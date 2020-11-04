@@ -49,27 +49,26 @@ public class PlayerClient {
      * Connects the client to a game and handles IO with command line and the server.
      */
     public void connectToGame() {
-        String response;
+        String serverMessage;
         String line = "";
         boolean gameRunning = true;
         while (gameRunning) {
             try {
+                // Wait for a message from server
+                serverMessage = socketIn.readLine();
 
-                // Wait for a response from server
-                response = socketIn.readLine();
+                // Print message to std out
+                System.out.println(serverMessage);
 
-                // Print response to std out
-                System.out.println(response);
-
-                // If response is null then server is unresponsive, so end game
-                if (response == null) {
+                // If server is unresponsive terminate
+                if (serverMessage == null) {
                     System.err.println("Error: connection with server was lost.");
                     gameRunning = false;
                 }
                 // Search for phrases that require user input and send to server
-                else if (response.toLowerCase().contains("enter your name") ||
-                         response.toLowerCase().contains("try again") ||
-                         response.contains("?")) {
+                else if (serverMessage.toLowerCase().contains("enter your name") ||
+                         serverMessage.toLowerCase().contains("try again") ||
+                         serverMessage.contains("?")) {
 
                     line = stdIn.readLine();
 
@@ -80,7 +79,12 @@ public class PlayerClient {
                     socketOut.println(line);
                 }
                 // Stop if game is finished running
-                else if (response.contains("THE GAME IS OVER")) {
+                else if (serverMessage.contains("THE GAME IS OVER")) {
+                    gameRunning = false;
+                }
+                else {
+                    System.out.println("Error: cannot interpret message from server.");
+                    System.out.println("Server message: " + serverMessage);
                     gameRunning = false;
                 }
             }

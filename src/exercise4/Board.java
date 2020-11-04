@@ -79,9 +79,8 @@ public class Board implements Constants {
 	}
 
 	/**
-	 * Displays the board's current state to standard out.
-	 *
-	 * Used to visualize how each tile was marked (and which ones are empty)
+	 * Writes a text-block version of board to a socket.
+	 * Used to visualize how each tile was marked (and which ones are empty).
 	 */
 	public void display(PrintWriter socketOut) {
 		displayColumnHeaders(socketOut);

@@ -1,7 +1,6 @@
 package exercise4;
 
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
 
 public class PlayerGUI extends JFrame {
@@ -9,29 +8,35 @@ public class PlayerGUI extends JFrame {
     /**
      * Input for a username.
      */
-    private JTextField inputUsername;
+    private JTextField usernameField;
 
     /**
      * Outputs user's assigned mark.
      */
-    private JTextField inputMark;
+    private JTextField markField;
 
     /**
      * Outputs messages from the server.
      */
     private JTextArea serverMessages;
 
+    /**
+     * Outputs tic-tac-toe board tile values.
+     */
+    private JButton[][] tiles;
+
     public PlayerGUI(String title) {
         // Add link to PlayerClient or make this a client
 
         // Instantiate GUI components
         JLabel usernamePrompt = new JLabel("Username:");
-        inputUsername = new JTextField(15);
-        inputUsername.setText("");
+        usernameField = new JTextField(15);
+        usernameField.setText("");
+        usernameField.setEditable(false);
 
         JLabel markLabel = new JLabel("Player mark:");
-        inputMark = new JTextField(1);
-        inputMark.setEditable(false);
+        markField = new JTextField(1);
+        markField.setEditable(false);
 
         JLabel messageLabel = new JLabel("Server Messages:");
         serverMessages = new JTextArea(5, 30);
@@ -42,24 +47,28 @@ public class PlayerGUI extends JFrame {
 
         JPanel boardPanel = new JPanel();
         boardPanel.setLayout(new GridLayout(3,3));
-        JButton[] tiles = new JButton[9];
-        for (JButton tile: tiles) {
-            tile = new JButton("?");
-            tile.setContentAreaFilled(false);
-            boardPanel.add(tile);
+        tiles = new JButton[3][3];
+
+        for (int i = 0; i < 3; i ++) {
+            for (int j = 0; j < 3; j++) {
+                tiles[i][j] = new JButton("");
+                tiles[i][j].setContentAreaFilled(false);
+                boardPanel.add(tiles[i][j]);
+            }
         }
+
         boardPanel.setSize(1000,1000);
 
         JPanel usernamePanel = new JPanel();
         usernamePanel.setLayout(new FlowLayout());
         usernamePanel.add(usernamePrompt);
-        usernamePanel.add(inputUsername);
+        usernamePanel.add(usernameField);
         usernamePanel.add(markLabel);
-        usernamePanel.add(inputMark);
+        usernamePanel.add(markField);
 
         JPanel messagePanel = new JPanel();
-        messagePanel.add(usernamePanel);
         messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.Y_AXIS));
+        messagePanel.add(usernamePanel);
         messagePanel.add(messageLabel);
         messagePanel.add(scrollPane);
 
@@ -78,7 +87,39 @@ public class PlayerGUI extends JFrame {
         setVisible(true);
     }
 
+    public void setPlayerMark(char mark) {
+        this.markField.setText(String.valueOf(mark));
+    }
+
+    public void setPlayerUsername(String username) {
+        this.usernameField.setText(username);
+    }
+
+    public String promptForUsername(String prompt) {
+        return JOptionPane.showInputDialog(prompt);
+    }
+
+    public void updateTileValues(char[][] values) {
+        for (int i = 0; i < 3; i ++) {
+            for (int j = 0; j < 3; j++) {
+                tiles[i][j].setText(String.valueOf(values[i][j]));
+            }
+        }
+    }
+
     public static void main(String[] args) {
-        new PlayerGUI("Tic Tac Toe Player");
+        PlayerGUI frame = new PlayerGUI("Tic Tac Toe Player");
+        frame.setPlayerMark('O');
+        String username = frame.promptForUsername("Please enter your username");
+        frame.setPlayerUsername(username);
+        char[][] values = new char[3][3];
+
+        for (int i = 0; i < 3; i ++) {
+            for (int j = 0; j < 3; j++) {
+                values[i][j] = 'X';
+            }
+        }
+
+        frame.updateTileValues(values);
     }
 }
