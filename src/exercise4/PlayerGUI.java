@@ -1,7 +1,9 @@
 package exercise4;
 
 import java.awt.*;
+import java.awt.event.ActionListener;
 import javax.swing.*;
+import javax.swing.text.DefaultCaret;
 
 public class PlayerGUI extends JFrame {
 
@@ -39,18 +41,23 @@ public class PlayerGUI extends JFrame {
         markField.setEditable(false);
 
         JLabel messageLabel = new JLabel("Server Messages:");
+
         serverMessages = new JTextArea(5, 30);
         serverMessages.setWrapStyleWord(true);
         serverMessages.setWrapStyleWord(true);
         serverMessages.setEditable(false);
+        DefaultCaret caret = (DefaultCaret) serverMessages.getCaret();  // auto-scroll when messages update
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
         JScrollPane scrollPane = new JScrollPane(serverMessages);
 
+        // Instantiate board and 3x3 tiles
         JPanel boardPanel = new JPanel();
         boardPanel.setLayout(new GridLayout(3,3));
-        tiles = new JButton[3][3];
-
+        tiles = new JButton[3][];
         for (int i = 0; i < 3; i ++) {
+            tiles[i] = new JButton[3];
             for (int j = 0; j < 3; j++) {
+                // Display tile on board
                 tiles[i][j] = new JButton("");
                 tiles[i][j].setContentAreaFilled(false);
                 boardPanel.add(tiles[i][j]);
@@ -95,8 +102,16 @@ public class PlayerGUI extends JFrame {
         this.usernameField.setText(username);
     }
 
-    public String promptForUsername(String prompt) {
+    public String getUserInput(String prompt) {
         return JOptionPane.showInputDialog(prompt);
+    }
+
+    public void appendServerMessageText(String message) {
+        serverMessages.append("\n" + message);
+    }
+
+    public final JButton[][] getTiles() {
+        return tiles;
     }
 
     public void updateTileValues(char[][] values) {
@@ -110,7 +125,7 @@ public class PlayerGUI extends JFrame {
     public static void main(String[] args) {
         PlayerGUI frame = new PlayerGUI("Tic Tac Toe Player");
         frame.setPlayerMark('O');
-        String username = frame.promptForUsername("Please enter your username");
+        String username = frame.getUserInput("Please enter your username");
         frame.setPlayerUsername(username);
         char[][] values = new char[3][3];
 
@@ -121,5 +136,10 @@ public class PlayerGUI extends JFrame {
         }
 
         frame.updateTileValues(values);
+    }
+
+    public void addTileButtonListener(int rowIdx, int colIdx, ActionListener tileButtonListener) {
+        if (rowIdx > 0 && rowIdx < 3 && colIdx > 0 && colIdx < 3)
+            tiles[rowIdx][colIdx].addActionListener(tileButtonListener);
     }
 }

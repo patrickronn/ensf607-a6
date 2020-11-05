@@ -81,6 +81,7 @@ public class Board implements Constants {
 	/**
 	 * Writes a text-block version of board to a socket.
 	 * Used to visualize how each tile was marked (and which ones are empty).
+	 * @param socketOut a PrintWriter connected to stream with player client
 	 */
 	public void display(PrintWriter socketOut) {
 		displayColumnHeaders(socketOut);
@@ -93,6 +94,21 @@ public class Board implements Constants {
 			socketOut.println("|");
 			addSpaces(socketOut);
 			addHyphens(socketOut);
+		}
+	}
+
+	/**
+	 * Sends each value of the board to a socket; one tile value per line (used for Exercise 5).
+	 * @param socketOut a PrintWriter connected to stream with player client
+	 */
+	public void sendTileValues(PrintWriter socketOut) {
+		// Notify client that tile values will be sent
+		socketOut.println("Draw:");
+
+		// Send each value
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++)
+				socketOut.println(theBoard[i][j]);
 		}
 	}
 

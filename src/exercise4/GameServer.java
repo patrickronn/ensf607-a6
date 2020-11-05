@@ -77,6 +77,11 @@ public class GameServer implements Constants {
                 socketOut = new PrintWriter(socket.getOutputStream(), true);
 
                 socketOut.println("Message: WELCOME TO THE GAME");
+
+                // Read whether the client is a GUI (true) or CLUI (false)
+                String playerTypeStr = socketIn.readLine();
+                boolean GUIFlag = playerTypeStr.toLowerCase().equals("gui");
+
                 socketOut.println("Please enter your name: ");
                 String name = socketIn.readLine();
 
@@ -84,14 +89,14 @@ public class GameServer implements Constants {
                 if (xPlayerWaiting == null && name != null) {
                     // Create Player 'X'
                     socketOut.println(name + ", you are assigned to Player 'X'.");
-                    xPlayerWaiting = new Player(name, LETTER_X, socket);
+                    xPlayerWaiting = new Player(name, LETTER_X, socket, GUIFlag);
 
                     socketOut.println("\nMessage: Waiting for an opponent to connect...");
                 }
                 else if (xPlayerWaiting != null && name != null){
                     // Create Player 'O'
                     socketOut.println(name + ", you are assigned to Player 'O'.");
-                    Player oPlayer = new Player(name, LETTER_O, socket);
+                    Player oPlayer = new Player(name, LETTER_O, socket, GUIFlag);
 
                     // Start a new game since two players are ready
                     startNewGame(xPlayerWaiting, oPlayer);

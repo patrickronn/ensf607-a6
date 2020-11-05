@@ -54,6 +54,8 @@ public class Player {
      */
     private char mark;
 
+    private boolean playerGUIConnected;
+
     /**
      * Constructs a player with their specified name and mark.
      *
@@ -61,14 +63,26 @@ public class Player {
      * @param name name of the player
      * @param mark a char representing the player's mark on the board
      */
-    public Player(String name, char mark, Socket playerSocket) {
+    public Player(String name, char mark, Socket playerSocket, boolean playerGUIConnected) {
         try {
+            // Initialize member variables
             this.name = name;
             this.mark = mark;
             this.playerSocket = playerSocket;
             this.socketIn = new BufferedReader(new InputStreamReader(playerSocket.getInputStream()));
             this.socketOut = new PrintWriter(playerSocket.getOutputStream(), true);
+            this.playerGUIConnected = playerGUIConnected;
+
             setBoard(null);
+
+            // If GUI is connected, notify GUI of the player username and mark
+            if (playerGUIConnected) {
+                socketOut.println("Set username:");
+                socketOut.println(name);
+                socketOut.println("Set mark:");
+                socketOut.println(mark);
+            }
+
         } catch (IOException e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
@@ -88,13 +102,13 @@ public class Player {
 
         do {
             // Show board to player who went last turn
-            board.display(playerCurrentTurn.socketOut);
+            playerCurrentTurn.displayBoard();
             playerCurrentTurn.socketOut.println("Waiting on opponent's turn...");
 
             playerCurrentTurn = playerNextTurn;
 
             // Show board to player who goes this current turn
-            board.display(playerCurrentTurn.socketOut);
+            playerCurrentTurn.displayBoard();
 
             // Player makes a move during their turn
             playerCurrentTurn.makeMove();
@@ -107,11 +121,10 @@ public class Player {
         } while (!board.xWins() && !board.oWins() && !board.isFull());
 
         // Reaches here when game is finished:
-        String gameOverString = "";
+        this.displayBoard();
+        opponent.displayBoard();
 
-        board.display(this.socketOut);
-        board.display(opponent.socketOut);
-
+        String gameOverString;
         // Display winner (logically, the winner is the player whose turn broke the play loop)
         if (board.xWins() || board.oWins())
             gameOverString = "THE GAME IS OVER: " + playerCurrentTurn.name + " is the winner!";
@@ -135,6 +148,13 @@ public class Player {
 
         // Update board with player mark
         board.addMark(row, col, this.mark);
+    }
+
+    public void displayBoard() {
+        if (playerGUIConnected)
+            board.sendTileValues(this.socketOut);
+        else
+            board.display(this.socketOut);
     }
 
     /**
