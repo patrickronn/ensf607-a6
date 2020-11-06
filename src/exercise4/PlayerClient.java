@@ -102,7 +102,7 @@ public class PlayerClient {
                 // Wait for a message from server
                 serverMessage = socketIn.readLine();
 
-                // If server is unresponsive terminate
+                // If server is unresponsive, terminate
                 if (serverMessage == null) {
                     displayMessage("Error: connection with server was lost.");
                     gameRunning = false;

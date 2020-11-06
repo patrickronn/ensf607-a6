@@ -91,7 +91,7 @@ public class GameServer implements Constants {
                     socketOut.println(name + ", you are assigned to Player 'X'.");
                     xPlayerWaiting = new Player(name, LETTER_X, socket, GUIFlag);
 
-                    socketOut.println("\nMessage: Waiting for an opponent to connect...");
+                    socketOut.println("Message: Waiting for an opponent to connect...");
                 }
                 else if (xPlayerWaiting != null && name != null){
                     // Create Player 'O'

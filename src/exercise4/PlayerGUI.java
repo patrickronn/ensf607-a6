@@ -1,7 +1,6 @@
 package exercise4;
 
 import java.awt.*;
-import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.text.DefaultCaret;
 
@@ -136,10 +135,5 @@ public class PlayerGUI extends JFrame {
         }
 
         frame.updateTileValues(values);
-    }
-
-    public void addTileButtonListener(int rowIdx, int colIdx, ActionListener tileButtonListener) {
-        if (rowIdx > 0 && rowIdx < 3 && colIdx > 0 && colIdx < 3)
-            tiles[rowIdx][colIdx].addActionListener(tileButtonListener);
     }
 }

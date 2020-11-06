@@ -12,7 +12,7 @@ import java.net.Socket;
  * A Player plays a Game and can view the playing Board. They also keep track of an opponent
  * Player and the Referee.
  *
- * Has IO streams with a PlayerClient.
+ * Initializes with reference to player client via socket connection.
  *
  * @author Patrick Ronn Linang
  * @since November 1, 2020
@@ -75,7 +75,7 @@ public class Player {
 
             setBoard(null);
 
-            // If GUI is connected, notify GUI of the player username and mark
+            // If GUI is connected, notify client of the player username and mark
             if (playerGUIConnected) {
                 socketOut.println("Set username:");
                 socketOut.println(name);
