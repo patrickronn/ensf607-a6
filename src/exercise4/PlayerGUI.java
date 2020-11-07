@@ -4,6 +4,9 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.text.DefaultCaret;
 
+/**
+ * Creates a GUI for a PlayerClient (FOR EXERCISE 5).
+ */
 public class PlayerGUI extends JFrame {
 
     /**
@@ -40,7 +43,6 @@ public class PlayerGUI extends JFrame {
         markField.setEditable(false);
 
         JLabel messageLabel = new JLabel("Server Messages:");
-
         serverMessages = new JTextArea(5, 30);
         serverMessages.setWrapStyleWord(true);
         serverMessages.setWrapStyleWord(true);
@@ -93,26 +95,50 @@ public class PlayerGUI extends JFrame {
         setVisible(true);
     }
 
+    /**
+     * Sets the text content of markField.
+     * @param mark a char value representing player's mark
+     */
     public void setPlayerMark(char mark) {
         this.markField.setText(String.valueOf(mark));
     }
 
+    /**
+     * Sets the text content of usernameField.
+     * @param username a String for player's username
+     */
     public void setPlayerUsername(String username) {
         this.usernameField.setText(username);
     }
 
+    /**
+     * Displays a Input Dialog to retrieve user input.
+     * @param prompt prompt to display in input dialog.
+     * @return user input to the input dialog.
+     */
     public String getUserInput(String prompt) {
         return JOptionPane.showInputDialog(prompt);
     }
 
+    /**
+     * Adds server messages to the end of serverMessage.
+     * @param message the message to append
+     */
     public void appendServerMessageText(String message) {
         serverMessages.append("\n" + message);
     }
 
+    /**
+     * @return getter method for reference to tiles 2D array.
+     */
     public final JButton[][] getTiles() {
         return tiles;
     }
 
+    /**
+     * Updates the marks of all tiles.
+     * @param values the updated values for each tile in a 2D char array.
+     */
     public void updateTileValues(char[][] values) {
         for (int i = 0; i < 3; i ++) {
             for (int j = 0; j < 3; j++) {
@@ -122,6 +148,7 @@ public class PlayerGUI extends JFrame {
     }
 
     public static void main(String[] args) {
+        // Tests what the GUI looks like without any client attached.
         PlayerGUI frame = new PlayerGUI("Tic Tac Toe Player");
         frame.setPlayerMark('O');
         String username = frame.getUserInput("Please enter your username");

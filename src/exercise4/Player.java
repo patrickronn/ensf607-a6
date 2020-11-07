@@ -54,6 +54,9 @@ public class Player {
      */
     private char mark;
 
+    /**
+     * Flag as to whether the player client contains a GUI.
+     */
     private boolean playerGUIConnected;
 
     /**
@@ -62,6 +65,8 @@ public class Player {
      * A new player isn't assigned to a board yet.
      * @param name name of the player
      * @param mark a char representing the player's mark on the board
+     * @param playerSocket connected
+     * @param playerGUIConnected true if player client contains a GUI; otherwise, false.
      */
     public Player(String name, char mark, Socket playerSocket, boolean playerGUIConnected) {
         try {
@@ -75,18 +80,24 @@ public class Player {
 
             setBoard(null);
 
-            // If GUI is connected, notify client of the player username and mark
-            if (playerGUIConnected) {
-                socketOut.println("Set username:");
-                socketOut.println(name);
-                socketOut.println("Set mark:");
-                socketOut.println(mark);
-            }
+            // If GUI is connected, notify GUI of the player username and mark
+            if (playerGUIConnected)
+                sendUserInfo();
 
         } catch (IOException e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Sends the player's username and assigned mark to the player client.
+     */
+    public void sendUserInfo() {
+        socketOut.println("Set username:");
+        socketOut.println(name);
+        socketOut.println("Set mark:");
+        socketOut.println(mark);
     }
 
     /**
@@ -101,16 +112,15 @@ public class Player {
         Player playerNextTurn = this;
 
         do {
-            // Show board to player who went last turn
+            // Show board to both players
+            playerNextTurn.displayBoard();
             playerCurrentTurn.displayBoard();
+
             playerCurrentTurn.socketOut.println("Waiting on opponent's turn...");
 
+            // Switch turn, display, and make move
             playerCurrentTurn = playerNextTurn;
-
-            // Show board to player who goes this current turn
             playerCurrentTurn.displayBoard();
-
-            // Player makes a move during their turn
             playerCurrentTurn.makeMove();
 
             // Update whose turn is next
@@ -120,7 +130,7 @@ public class Player {
                 playerNextTurn = this;
         } while (!board.xWins() && !board.oWins() && !board.isFull());
 
-        // Reaches here when game is finished:
+        // Reach here when game is finished:
         this.displayBoard();
         opponent.displayBoard();
 

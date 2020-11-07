@@ -10,6 +10,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Represents the GameServer that listens for player client connections. Uses a thread pool
+ * to instantiate new games whenever two player clients are ready to play.
+ *
+ * @since November 6, 2020
+ * @author Patrick Linang
+ * */
 public class GameServer implements Constants {
     /**
      * Waits for requests to come in through the network.
@@ -39,7 +46,7 @@ public class GameServer implements Constants {
     /**
      * Controls the maximum # of games that can run in parallel.
      */
-    private final static int MAX_CONCURRENT_GAMES = 2;
+    private final static int MAX_CONCURRENT_GAMES = 3;
 
     /**
      * Temporarily stores reference to a player who's waiting for an opponent.
@@ -55,7 +62,7 @@ public class GameServer implements Constants {
             serverSocket = new ServerSocket(portNumber);
             gamePool = Executors.newFixedThreadPool(MAX_CONCURRENT_GAMES);
             xPlayerWaiting = null;
-            System.out.println("Server is now running.");
+            System.out.println("Server is now running on " + serverSocket.getLocalSocketAddress());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -70,7 +77,7 @@ public class GameServer implements Constants {
             while (true) {
                 // Wait for a client connection
                 socket = serverSocket.accept();
-                System.out.println("Server: a new player client has connected on " + socket.getLocalSocketAddress());
+                System.out.println("Server: a new player client has connected on " + socket.getRemoteSocketAddress());
 
                 // Create IO connections
                 socketIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));

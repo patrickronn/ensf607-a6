@@ -9,6 +9,14 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+/**
+ * Represents a player client that can either have a command-line interface or GUI.
+ * Connects to the GameServer to play a tic-tac-toe.
+ *
+ * For Exercise 4 and Exercise 5.
+ * @since November 6, 2020
+ * @author Patrick Linang
+ */
 public class PlayerClient {
     /**
      * Connects to a TicTacToeServer.
@@ -72,12 +80,19 @@ public class PlayerClient {
     public PlayerClient(String servername, int portNumber, PlayerGUI playerGUI) {
         this(servername, portNumber);
         this.playerGUI = playerGUI;
+        addTileListeners();
+    }
 
-        // Add ActionListeners for each tile
-        JButton[][] tiles = playerGUI.getTiles();
-        for (int i = 0; i < tiles.length; i++)
-            for (int j = 0; j < tiles[i].length; j++)
+    /**
+     * Adds 9 TileButtonListeners to all tiles on the board.
+     */
+    public void addTileListeners() {
+        if (playerGUI != null) {
+            JButton[][] tiles = playerGUI.getTiles();
+            for (int i = 0; i < tiles.length; i++)
+                for (int j = 0; j < tiles[i].length; j++)
                     tiles[i][j].addActionListener(new TileButtonListener(i, j));
+        }
     }
 
     /**
@@ -113,22 +128,24 @@ public class PlayerClient {
                     displayMessage(serverMessage);
                     gameRunning = false;
                 }
+                // Search if server is prompting for player name
                 else if (serverMessage.toLowerCase().contains("enter your name")) {
                     String line = getUserInput(serverMessage);
                     socketOut.println(line);
-
                 }
                 // Search for phrases that require user input and send to server
                 else if (serverMessage.toLowerCase().contains("what column") ||
                          serverMessage.toLowerCase().contains("what row") ||
                         serverMessage.toLowerCase().contains("invalid index")) {
-                    allowMoveSelection = true;
                     if (playerGUI == null) {
                         String line = getUserInput(serverMessage);
                         socketOut.println(line);
                     }
-                    else { // playerGUI == true
-                        displayMessage(serverMessage);
+                    else {
+                        if (serverMessage.toLowerCase().contains("what row")) {
+                            allowMoveSelection = true;
+                            displayMessage("Please make a move.");
+                        }
                     }
                 }
                 // Search for 'Draw:' to begin update GUI tile values
@@ -215,6 +232,7 @@ public class PlayerClient {
      */
     public String getUserInput(String prompt) throws IOException {
         String line;
+        // If player client has a CLUI
         if (playerGUI == null) {
             displayMessage(prompt);
             line = stdIn.readLine();
@@ -223,6 +241,7 @@ public class PlayerClient {
                     line = stdIn.readLine();
                 }
         }
+        // If player client has a GUI
         else {
             line = playerGUI.getUserInput(prompt);
             while (line == null || line.isEmpty()) {
@@ -253,6 +272,13 @@ public class PlayerClient {
             colIdx = j;
         }
 
+        /**
+         * Send the row and column index of the button that was pressed.
+         *
+         * Only sends if the player client allows it to.
+         *
+         * @param e an event representing a user pressing a button
+         */
         @Override
         public void actionPerformed(ActionEvent e) {
             // Send server the row and col indices
@@ -264,10 +290,23 @@ public class PlayerClient {
         }
     }
 
-    public static void main(String[] args) {
-//        PlayerClient player = new PlayerClient("localhost", 8099);
-        PlayerClient player = new PlayerClient("localhost", 8099, new PlayerGUI("Tic Tac Toe Player"));
-        player.connectToGame();
+    public static void main(String[] args) throws IOException {
+        System.out.println("Please specify client type and press enter.");
+        System.out.println("Type '1' for CLUI (exercise 4) or '2' for GUI (exercise 5): ");
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int optionSelected = Integer.parseInt(br.readLine());
 
+        if (optionSelected == 1) {
+            // Instantiate player client with command-line user interface and connect to server
+            PlayerClient myPlayer = new PlayerClient("localhost", 8099);
+            myPlayer.connectToGame();
+        }
+        else if (optionSelected == 2) {
+            // Instantiate player client with GUI and coonnect to server
+            PlayerGUI myGUI = new PlayerGUI("Tic Tac Toe Player");
+            PlayerClient myPlayer = new PlayerClient("localhost", 8099, myGUI);
+            //        PlayerClient player = new PlayerClient("192.168.1.69", 8099, myGUI);
+            myPlayer.connectToGame();
+        }
     }
 }
