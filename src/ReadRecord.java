@@ -3,8 +3,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
+/**
+ * Reads objects from a file via deserialization. For Exercise 3.
+ */
 public class ReadRecord {
 
+    /**
+     * Stream to file to read objects from.
+     */
     private ObjectInputStream input;
 
     /**

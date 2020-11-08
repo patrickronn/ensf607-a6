@@ -4,6 +4,12 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.Scanner;
 
+/**
+ * Reads music record info from a text file then serializes each record as a MusicRecord object.
+ * Objects are written to a specified file name.
+ *
+ * For Exercise 3.
+ */
 public class WriteRecord {
 
 	ObjectOutputStream objectOut = null;

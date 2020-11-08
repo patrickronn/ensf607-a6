@@ -1,7 +1,7 @@
 import java.io.Serializable;
 
 /**
- *   A simple class that represents a music record
+ *   A simple class that represents a music record. For Exercise 3.
  *
  */
 class MusicRecord implements Serializable
