@@ -9,6 +9,10 @@ import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+/**
+ * A simple Server provided for Exercise 2. This file remains untouched EXCEPT for a change
+ * to the output formatting to properly display date and time. Refer to Client for my code.
+ */
 public class DateServer {
 	private BufferedReader socketInput;
 	private PrintWriter socketOutput;

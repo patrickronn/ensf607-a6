@@ -112,13 +112,11 @@ public class Player {
         Player playerNextTurn = this;
 
         do {
-            // Show board to both players
-            playerNextTurn.displayBoard();
+            // Display board to player waiting
             playerCurrentTurn.displayBoard();
-
             playerCurrentTurn.socketOut.println("Waiting on opponent's turn...");
 
-            // Switch turn, display, and make move
+            // Switch current player turn, display, and make move
             playerCurrentTurn = playerNextTurn;
             playerCurrentTurn.displayBoard();
             playerCurrentTurn.makeMove();

@@ -6,6 +6,9 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+/**
+ * A simple Client provided for Exercise 1. This file remains untouched. Refer to Server for my code.
+ */
 public class Client {
 	private PrintWriter socketOut;
 	private Socket palinSocket;

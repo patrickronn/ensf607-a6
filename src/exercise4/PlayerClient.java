@@ -294,19 +294,26 @@ public class PlayerClient {
         System.out.println("Please specify client type and press enter.");
         System.out.println("Type '1' for CLUI (exercise 4) or '2' for GUI (exercise 5): ");
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int optionSelected = Integer.parseInt(br.readLine());
 
-        if (optionSelected == 1) {
-            // Instantiate player client with command-line user interface and connect to server
-            PlayerClient myPlayer = new PlayerClient("localhost", 8099);
-            myPlayer.connectToGame();
+        try {
+            int optionSelected = Integer.parseInt(br.readLine());
+            if (optionSelected == 1) {
+                // Instantiate player client with command-line user interface and connect to server
+                PlayerClient myPlayer = new PlayerClient("localhost", 8099);
+                myPlayer.connectToGame();
+            }
+            else if (optionSelected == 2) {
+                // Instantiate player client with GUI and coonnect to server
+                PlayerGUI myGUI = new PlayerGUI("Tic Tac Toe Player");
+                PlayerClient myPlayer = new PlayerClient("localhost", 8099, myGUI);
+                //        PlayerClient player = new PlayerClient("192.168.1.69", 8099, myGUI);
+                myPlayer.connectToGame();
+            }
+            else
+                System.out.println("Invalid input. only enter '1' or '2'.");
         }
-        else if (optionSelected == 2) {
-            // Instantiate player client with GUI and coonnect to server
-            PlayerGUI myGUI = new PlayerGUI("Tic Tac Toe Player");
-            PlayerClient myPlayer = new PlayerClient("localhost", 8099, myGUI);
-            //        PlayerClient player = new PlayerClient("192.168.1.69", 8099, myGUI);
-            myPlayer.connectToGame();
+        catch (NumberFormatException e) {
+            System.err.println("Only enter '1' or '2'");
         }
     }
 }
