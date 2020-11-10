@@ -41,6 +41,9 @@ public class Client {
         }
     }
 
+    /**
+     * Reads a user option from std in and sends the option to the server.
+     */
     public void communicate() {
         try {
             String response = "";

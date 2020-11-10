@@ -41,6 +41,7 @@ public class Server {
     public Server(int portNumber) {
         try {
             serverSocket = new ServerSocket(portNumber);
+            System.out.println("Server is now running.");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -55,12 +56,13 @@ public class Server {
                 // Wait for a client connection to accept
                 aSocket = serverSocket.accept();
 
-                System.out.println("Server is now running.");
+                System.out.println("Server accepted a clinent.");
 
                 // Open IO streams
                 socketIn = new BufferedReader(new InputStreamReader(aSocket.getInputStream()));
                 socketOut = new PrintWriter(aSocket.getOutputStream(), true);
 
+                // Read user input to check if palindrome
                 checkPalindrome();
             }
         } catch (IOException e) {

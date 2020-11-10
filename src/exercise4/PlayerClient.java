@@ -10,10 +10,13 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 /**
- * Represents a player client that can either have a command-line interface or GUI.
+ * Represents a player client that can either have a command-line user interface or GUI.
  * Connects to the GameServer to play a tic-tac-toe.
  *
  * For Exercise 4 and Exercise 5.
+ * For Exercise 4, type '1' to run command-line user interface after running main().
+ * For Exercise 5, type '2' to run GUI instead.
+ *
  * @since November 6, 2020
  * @author Patrick Linang
  */
@@ -306,7 +309,7 @@ public class PlayerClient {
                 // Instantiate player client with GUI and coonnect to server
                 PlayerGUI myGUI = new PlayerGUI("Tic Tac Toe Player");
                 PlayerClient myPlayer = new PlayerClient("localhost", 8099, myGUI);
-                //        PlayerClient player = new PlayerClient("192.168.1.69", 8099, myGUI);
+//                PlayerClient myPlayer = new PlayerClient("192.168.1.69", 8099, myGUI); // only running this for remote GUI
                 myPlayer.connectToGame();
             }
             else
